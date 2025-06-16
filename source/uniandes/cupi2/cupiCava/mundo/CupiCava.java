@@ -238,6 +238,22 @@ public class CupiCava
      */
     public void ordenarVinosPorAnhoElaboracion( )
     {
+    	for (int i = 0; i < vinos.size() - 1; i++) {
+            int indiceMayor = i;
+            
+            // Busca el vino con el año más alto en la parte no ordenada
+            for (int j = i + 1; j < vinos.size(); j++) {
+                if (vinos.get(j).darAnhoElaboracion() > vinos.get(indiceMayor).darAnhoElaboracion()) {
+                    indiceMayor = j;
+                }
+            }
+            
+            if (indiceMayor != i) {
+                Vino temp = vinos.get(i);
+                vinos.set(i, vinos.get(indiceMayor));
+                vinos.set(indiceMayor, temp);
+            }
+        }
    	 // TODO Parte2 PuntoM: Implemente el método según la documentación dada.
    }
 
@@ -248,6 +264,18 @@ public class CupiCava
      */
     public void ordenarVinosPorLugarOrigen( )
     {
+    	for (int i = 1; i < vinos.size(); i++) {
+            Vino vinoActual = vinos.get(i);
+            int j = i - 1;
+            
+            // Mover los elementos mayores para la derecha
+            while (j >= 0 && vinos.get(j).darLugarOrigen().compareToIgnoreCase(vinoActual.darLugarOrigen()) > 0) {
+                vinos.set(j + 1, vinos.get(j));
+                j--;
+            }
+            
+            vinos.set(j + 1, vinoActual);
+        }
    	 // TODO Parte2 PuntoN: Implemente el método según la documentación dada.
    }
 
@@ -256,6 +284,43 @@ public class CupiCava
     // -----------------------------------------------------------------
 
     // TODO Parte1 PuntoD: Documente e implemente el método verificarInvariante. Si lo desea puede crear métodos privados en esta parte.
+    
+    private void verificarInvariante()
+    {
+        assert vinos != null : "La lista de vinos no puede ser null";
+        assert !hayVinosConNombreRepetido() : "No pueden existir dos vinos con el mismo nombre";
+        assert todosLosVinosSonValidos() : "Todos los vinos deben ser diferentes de null";
+    }
+    
+    /**
+     * Verifica si existen vinos con nombres repetidos.
+     * @return true si hay nombres repetidos, false en caso contrario.
+     */
+    private boolean hayVinosConNombreRepetido()
+    {
+        for (int i = 0; i < vinos.size(); i++) {
+            for (int j = i + 1; j < vinos.size(); j++) {
+                if (vinos.get(i).darNombre().equalsIgnoreCase(vinos.get(j).darNombre())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Verifica que todos los vinos en la lista sean diferentes de null.
+     * @return true si todos los vinos son válidos, false en caso contrario.
+     */
+    private boolean todosLosVinosSonValidos()
+    {
+        for (int i = 0; i < vinos.size(); i++) {
+            if (vinos.get(i) == null) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     // -----------------------------------------------------------------
     // Puntos de Extensión
