@@ -86,6 +86,24 @@ public class CupiCava
      */
     public Vino buscarBinarioPorNombre( String pNombre )
     {
+    	int inicio = 0;
+        int fin = vinos.size() - 1;
+        
+        while (inicio <= fin) {
+            int medio = (inicio + fin) / 2;
+            Vino vinoMedio = vinos.get(medio);
+            int comparacion = vinoMedio.darNombre().compareToIgnoreCase(pNombre);
+            
+            if (comparacion == 0) {
+                return vinoMedio;
+            } else if (comparacion < 0) {
+                inicio = medio + 1;
+            } else {
+                fin = medio - 1;
+            }
+        }
+        
+        return null;
    	 // TODO Parte2 PuntoH: Implemente el método según la documentación dada.
     }
 
@@ -97,6 +115,20 @@ public class CupiCava
      */
     public Vino buscarVinoMasDulce( )
     {
+    	if (vinos.isEmpty()) {
+            return null;
+        }
+        
+        Vino masDulce = vinos.get(0);
+        
+        for (int i = 1; i < vinos.size(); i++) {
+            Vino vinoActual = vinos.get(i);
+            if (vinoActual.darContenidoAzucar() > masDulce.darContenidoAzucar()) {
+                masDulce = vinoActual;
+            }
+        }
+        
+        return masDulce;
    	 // TODO Parte2 PuntoI: Implemente el método según la documentación dada.
     }
 
@@ -108,6 +140,20 @@ public class CupiCava
      */
     public Vino buscarVinoMasSeco( )
     {
+    	if (vinos.isEmpty()) {
+            return null;
+        }
+        
+        Vino masSeco = vinos.get(0);
+        
+        for (int i = 1; i < vinos.size(); i++) {
+            Vino vinoActual = vinos.get(i);
+            if (vinoActual.darContenidoAzucar() < masSeco.darContenidoAzucar()) {
+                masSeco = vinoActual;
+            }
+        }
+        
+        return masSeco;
    	 // TODO Parte2 PuntoJ: Implemente el método según la documentación dada.
    }
 
@@ -120,6 +166,16 @@ public class CupiCava
      */
     public ArrayList<Vino> buscarVinosDeTipo( String pTipo )
     {
+		ArrayList<Vino> vinosDelTipo = new ArrayList<Vino>();
+		        
+			for (int i = 0; i < vinos.size(); i++) {
+				Vino vinoActual = vinos.get(i);
+		    if (vinoActual.darTipo().equalsIgnoreCase(pTipo)) {
+		    	vinosDelTipo.add(vinoActual);
+		    }
+		}
+		        
+		return vinosDelTipo;
    	 // TODO Parte2 PuntoK: Implemente el método según la documentación dada.
    }
 
@@ -160,6 +216,18 @@ public class CupiCava
      */
     public void ordenarVinosPorNombre( )
     {
+    	for (int i = 0; i < vinos.size() - 1; i++) {
+            for (int j = 0; j < vinos.size() - 1 - i; j++) {
+                Vino vino1 = vinos.get(j);
+                Vino vino2 = vinos.get(j + 1);
+                
+                if (vino1.darNombre().compareToIgnoreCase(vino2.darNombre()) > 0) {
+                    // Intercambiar
+                    vinos.set(j, vino2);
+                    vinos.set(j + 1, vino1);
+                }
+            }
+        }
    	 // TODO Parte2 PuntoL: Implemente el método según la documentación dada.
    }
 
@@ -170,6 +238,22 @@ public class CupiCava
      */
     public void ordenarVinosPorAnhoElaboracion( )
     {
+    	for (int i = 0; i < vinos.size() - 1; i++) {
+            int indiceMayor = i;
+            
+            // Busca el vino con el año más alto en la parte no ordenada
+            for (int j = i + 1; j < vinos.size(); j++) {
+                if (vinos.get(j).darAnhoElaboracion() > vinos.get(indiceMayor).darAnhoElaboracion()) {
+                    indiceMayor = j;
+                }
+            }
+            
+            if (indiceMayor != i) {
+                Vino temp = vinos.get(i);
+                vinos.set(i, vinos.get(indiceMayor));
+                vinos.set(indiceMayor, temp);
+            }
+        }
    	 // TODO Parte2 PuntoM: Implemente el método según la documentación dada.
    }
 
@@ -180,6 +264,18 @@ public class CupiCava
      */
     public void ordenarVinosPorLugarOrigen( )
     {
+    	for (int i = 1; i < vinos.size(); i++) {
+            Vino vinoActual = vinos.get(i);
+            int j = i - 1;
+            
+            // Mover los elementos mayores para la derecha
+            while (j >= 0 && vinos.get(j).darLugarOrigen().compareToIgnoreCase(vinoActual.darLugarOrigen()) > 0) {
+                vinos.set(j + 1, vinos.get(j));
+                j--;
+            }
+            
+            vinos.set(j + 1, vinoActual);
+        }
    	 // TODO Parte2 PuntoN: Implemente el método según la documentación dada.
    }
 
@@ -188,6 +284,43 @@ public class CupiCava
     // -----------------------------------------------------------------
 
     // TODO Parte1 PuntoD: Documente e implemente el método verificarInvariante. Si lo desea puede crear métodos privados en esta parte.
+    
+    private void verificarInvariante()
+    {
+        assert vinos != null : "La lista de vinos no puede ser null";
+        assert !hayVinosConNombreRepetido() : "No pueden existir dos vinos con el mismo nombre";
+        assert todosLosVinosSonValidos() : "Todos los vinos deben ser diferentes de null";
+    }
+    
+    /**
+     * Verifica si existen vinos con nombres repetidos.
+     * @return true si hay nombres repetidos, false en caso contrario.
+     */
+    private boolean hayVinosConNombreRepetido()
+    {
+        for (int i = 0; i < vinos.size(); i++) {
+            for (int j = i + 1; j < vinos.size(); j++) {
+                if (vinos.get(i).darNombre().equalsIgnoreCase(vinos.get(j).darNombre())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Verifica que todos los vinos en la lista sean diferentes de null.
+     * @return true si todos los vinos son válidos, false en caso contrario.
+     */
+    private boolean todosLosVinosSonValidos()
+    {
+        for (int i = 0; i < vinos.size(); i++) {
+            if (vinos.get(i) == null) {
+                return false;
+            }
+        }
+        return true;
+    }
 
     // -----------------------------------------------------------------
     // Puntos de Extensión
